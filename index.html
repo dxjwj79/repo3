@@ -549,31 +549,10 @@
   #completed-section { margin-top: 4px; }
   #completed-section .task-item .task-title { color: var(--text-tertiary); text-decoration: line-through; }
 </style>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
-<!-- Login screen -->
-<div id="login-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;">
-  <div style="width:56px;height:56px;background:var(--blue);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px">
-      <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
-      <path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/>
-    </svg>
-  </div>
-  <h1 style="font-size:28px;font-weight:700;margin-bottom:8px;letter-spacing:-0.5px">Inbox</h1>
-  <p style="color:var(--text-secondary);font-size:15px;margin-bottom:40px;text-align:center">Sign in to access your tasks</p>
-  <button id="google-signin-btn" style="display:flex;align-items:center;gap:12px;padding:14px 24px;border:none;border-radius:14px;background:white;box-shadow:0 2px 12px rgba(0,0,0,0.12);font-size:17px;font-weight:600;font-family:inherit;cursor:pointer;width:100%;max-width:280px;justify-content:center;">
-    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-    Sign in with Google
-  </button>
-  <p id="login-error" style="color:var(--p-critical);font-size:13px;margin-top:16px;display:none">Sign in failed. Please try again.</p>
-</div>
 
-<!-- Main app (hidden until signed in) -->
-<div id="app-content" style="display:none">
 
 <div class="header">
   <div class="header-left">
@@ -594,6 +573,9 @@
     <button id="add-list-btn" style="width:30px;height:30px;border-radius:50%;border:none;background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;">
       <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </button>
+    <button id="settings-btn" style="width:30px;height:30px;border-radius:50%;border:none;background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    </button>
     <span class="count-badge" id="count-badge">0</span>
   </div>
 </div>
@@ -601,6 +583,30 @@
 <!-- List dropdown -->
 <div id="list-dropdown" style="display:none;position:absolute;top:110px;left:16px;right:16px;background:white;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.14);z-index:150;overflow:hidden;">
   <div id="list-dropdown-items"></div>
+</div>
+
+<!-- Settings modal -->
+<div class="modal-overlay" id="settings-overlay">
+  <div class="modal" style="padding-bottom:32px">
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+      <div class="modal-title" style="margin-bottom:0">Settings</div>
+      <button id="close-settings" style="border:none;background:none;font-size:15px;color:var(--text-secondary);cursor:pointer">Done</button>
+    </div>
+    <div style="background:var(--bg);border-radius:12px;overflow:hidden;margin-bottom:16px">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--separator)">
+        <div style="font-size:15px;font-weight:600;margin-bottom:4px">Backup your tasks</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">Download a backup file you can save to iCloud or email to yourself.</div>
+        <button id="export-btn" class="btn-save" style="width:100%;padding:12px;font-size:15px">Export backup</button>
+      </div>
+      <div style="padding:14px 16px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:4px">Restore from backup</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">Import a previously exported backup file.</div>
+        <input type="file" id="import-file" accept=".json" style="display:none">
+        <button id="import-btn" class="btn-cancel" style="width:100%;padding:12px;font-size:15px">Import backup</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Delete list confirmation -->
@@ -648,6 +654,14 @@
   <button class="filter-chip" data-filter="medium">🔵 Medium</button>
   <button class="filter-chip" data-filter="low">🟢 Low</button>
   <button class="filter-chip sort-chip sort-active" id="sort-btn" data-sort="priority">↕ Priority</button>
+</div>
+
+<div id="backup-reminder" style="display:none;margin:0 16px 12px;background:#fff9e6;border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+  <div>
+    <div style="font-size:14px;font-weight:600;color:#b07800">⏰ Backup reminder</div>
+    <div style="font-size:12px;color:#b07800;margin-top:2px" id="backup-reminder-msg">You haven't backed up in a while</div>
+  </div>
+  <button onclick="exportData();markBackup();" style="flex-shrink:0;padding:7px 12px;border:none;border-radius:8px;background:#ffcc00;color:#7a5000;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Back up</button>
 </div>
 
 <div id="task-container"></div>
@@ -730,23 +744,6 @@
 <script>
 window.addEventListener("load", function() {
 
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAgwgHuaJBnpCFuhtmV32EY7lXBCs24pY4",
-  authDomain: "test-5b5df.firebaseapp.com",
-  projectId: "test-5b5df",
-  storageBucket: "test-5b5df.firebasestorage.app",
-  messagingSenderId: "793772828615",
-  appId: "1:793772828615:web:19d21d7143e246e7625be2"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
-const provider = new firebase.auth.GoogleAuthProvider();
-// Data doc will be set per-user after login
-let DATA_DOC = null;
-
 const COLOR_MAP = {
   red: '#ff3b30', orange: '#ff9500', yellow: '#ffcc00', green: '#34c759',
   teal: '#5ac8fa', blue: '#007aff', purple: '#af52de', pink: '#ff2d55', gray: '#8e8e93'
@@ -754,10 +751,55 @@ const COLOR_MAP = {
 const PRIORITY_COLOR_MAP = { critical: '#ff3b30', high: '#ff9500', medium: '#007aff', low: '#34c759' };
 
 function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function saveLists(l) { localStorage.setItem('lists-v2', JSON.stringify(l)); }
+function saveTasks(t) { localStorage.setItem('tasks-v2', JSON.stringify(t)); }
+function save() { saveLists(lists); saveTasks(tasks); }
 
-let lists = [];
-let tasks = [];
-let activeListId = 'inbox';
+// ── BACKUP REMINDER ───────────────────────────────────────────────
+const BACKUP_INTERVAL_DAYS = 7;
+
+function checkBackupReminder() {
+  const last = parseInt(localStorage.getItem('last-backup') || '0');
+  const daysSince = (Date.now() - last) / (1000 * 60 * 60 * 24);
+  const banner = document.getElementById('backup-reminder');
+  const msg = document.getElementById('backup-reminder-msg');
+  if (daysSince >= BACKUP_INTERVAL_DAYS) {
+    banner.style.display = 'flex';
+    if (last === 0) {
+      msg.textContent = 'You have never backed up your tasks.';
+    } else {
+      msg.textContent = 'Last backup was ' + Math.floor(daysSince) + ' days ago.';
+    }
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function markBackup() {
+  localStorage.setItem('last-backup', Date.now().toString());
+  document.getElementById('backup-reminder').style.display = 'none';
+}
+
+// Initialize
+let lists = JSON.parse(localStorage.getItem('lists-v2') || 'null');
+let tasks = JSON.parse(localStorage.getItem('tasks-v2') || 'null');
+
+if (!lists) {
+  lists = [{ id: 'inbox', name: 'Inbox', color: '#007aff' }];
+  const oldTasks = JSON.parse(localStorage.getItem('inbox-tasks') || 'null');
+  tasks = oldTasks && oldTasks.length
+    ? oldTasks.map(t => ({ ...t, listId: 'inbox' }))
+    : [
+        { id: genId(), listId: 'inbox', title: 'Item 1', note: '', priority: 'critical', color: '', done: false },
+        { id: genId(), listId: 'inbox', title: 'Item 2', note: '', priority: 'high', color: '', done: false },
+        { id: genId(), listId: 'inbox', title: 'Item 3', note: '', priority: 'medium', color: '', done: false },
+        { id: genId(), listId: 'inbox', title: 'Item 4', note: '', priority: 'low', color: '', done: false },
+      ];
+  saveLists(lists); saveTasks(tasks);
+}
+if (!tasks) tasks = [];
+
+let activeListId = lists[0].id;
 let activeFilter = 'all';
 let sortMode = 'priority';
 let editingId = null;
@@ -768,154 +810,8 @@ let longPressTimer = null;
 let listDropdownOpen = false;
 let selectedListColor = '#007aff';
 let pendingDeleteListId = null;
-let manualOrderLists = new Set();
-let isSaving = false;
-let saveQueued = false;
-
-// ── FIREBASE SAVE/LOAD ────────────────────────────────────────────
-async function saveToFirebase() {
-  if (!DATA_DOC) return;
-  if (isSaving) { saveQueued = true; return; }
-  isSaving = true;
-  try {
-    await DATA_DOC.set({
-      lists,
-      tasks,
-      manualOrderLists: [...manualOrderLists],
-      updatedAt: Date.now()
-    });
-  } catch(e) {
-    console.error('Save failed:', e);
-  }
-  isSaving = false;
-  if (saveQueued) { saveQueued = false; saveToFirebase(); }
-}
-
-function save() {
-  // Also keep localStorage as offline backup
-  localStorage.setItem('lists-v2', JSON.stringify(lists));
-  localStorage.setItem('tasks-v2', JSON.stringify(tasks));
-  saveToFirebase();
-}
-
-function getDefaultData() {
-  return {
-    lists: [{ id: 'inbox', name: 'Inbox', color: '#007aff' }],
-    tasks: [
-      { id: genId(), listId: 'inbox', title: 'Item 1', note: '', priority: 'critical', color: '', done: false },
-      { id: genId(), listId: 'inbox', title: 'Item 2', note: '', priority: 'high', color: '', done: false },
-      { id: genId(), listId: 'inbox', title: 'Item 3', note: '', priority: 'medium', color: '', done: false },
-      { id: genId(), listId: 'inbox', title: 'Item 4', note: '', priority: 'low', color: '', done: false },
-    ],
-    manualOrderLists: []
-  };
-}
-
-// Auth state handler — runs when login state changes
-auth.onAuthStateChanged(async (user) => {
-  if (user) {
-    // Signed in — show app, hide login
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app-content').style.display = 'block';
-    // Set data doc to user-specific path
-    DATA_DOC = db.collection('users').doc(user.uid).collection('inbox').doc('data');
-    await initData();
-  } else {
-    // Not signed in — show login
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('app-content').style.display = 'none';
-  }
-});
-
-document.getElementById('google-signin-btn').addEventListener('click', () => {
-  const isStandalone = window.navigator.standalone === true;
-  if (isStandalone) {
-    // iOS home screen app — open sign-in in a new Safari tab
-    // Store a flag so when user returns we check auth state
-    localStorage.setItem('signingIn', '1');
-    window.open('https://test-5b5df.firebaseapp.com/__/auth/handler?provider=google', '_blank');
-  } else {
-    auth.signInWithPopup(provider).catch(err => {
-      console.error('Sign in error:', err);
-      if (err.code === 'auth/popup-blocked') {
-        auth.signInWithRedirect(provider);
-      } else {
-        document.getElementById('login-error').style.display = 'block';
-      }
-    });
-  }
-});
-
-// When app resumes focus (user returns from Safari sign-in tab)
-window.addEventListener('focus', () => {
-  if (localStorage.getItem('signingIn')) {
-    localStorage.removeItem('signingIn');
-    auth.getRedirectResult().catch(() => {});
-    // Re-check auth state
-    const user = auth.currentUser;
-    if (user) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('app-content').style.display = 'block';
-    }
-  }
-});
-
-auth.getRedirectResult().catch(err => {
-  if (err.code && err.code !== 'auth/no-auth-event') {
-    console.error('Redirect error:', err);
-  }
-});
-
-// Load from Firebase, fall back to localStorage
-async function initData() {
-  try {
-    const snap = await DATA_DOC.get();
-    if (snap.exists) {
-      const d = snap.data();
-      lists = d.lists || [];
-      tasks = d.tasks || [];
-      manualOrderLists = new Set(d.manualOrderLists || []);
-    } else {
-      // First time — check localStorage for migration
-      const oldLists = JSON.parse(localStorage.getItem('lists-v2') || 'null');
-      const oldTasks = JSON.parse(localStorage.getItem('tasks-v2') || 'null');
-      const veryOldTasks = JSON.parse(localStorage.getItem('inbox-tasks') || 'null');
-
-      if (oldLists && oldTasks && oldTasks.length > 0) {
-        lists = oldLists;
-        tasks = oldTasks;
-      } else if (veryOldTasks && veryOldTasks.length > 0) {
-        lists = [{ id: 'inbox', name: 'Inbox', color: '#007aff' }];
-        tasks = veryOldTasks.map(t => ({ ...t, listId: 'inbox' }));
-      } else {
-        const d = getDefaultData();
-        lists = d.lists; tasks = d.tasks;
-      }
-      // Save to Firebase immediately
-      await DATA_DOC.set({ lists, tasks, manualOrderLists: [], updatedAt: Date.now() });
-    }
-  } catch(e) {
-    console.error('Load failed, falling back to localStorage', e);
-    lists = JSON.parse(localStorage.getItem('lists-v2') || 'null') || [{ id: 'inbox', name: 'Inbox', color: '#007aff' }];
-    tasks = JSON.parse(localStorage.getItem('tasks-v2') || '[]');
-  }
-
-  activeListId = lists[0]?.id || 'inbox';
-  renderAll();
-
-  // Listen for real-time updates from other devices
-  DATA_DOC.onSnapshot((snap) => {
-    if (!snap.exists()) return;
-    const d = snap.data();
-    // Only update if it's newer and we're not mid-save
-    if (d.updatedAt && d.updatedAt > (window._lastSaveTime || 0) && !isSaving) {
-      lists = d.lists || [];
-      tasks = d.tasks || [];
-      manualOrderLists = new Set(d.manualOrderLists || []);
-      renderAll();
-    }
-  });
-}
+let manualOrderLists = new Set(JSON.parse(localStorage.getItem('manual-order-lists') || '[]'));
+function saveManualOrderLists() { localStorage.setItem('manual-order-lists', JSON.stringify([...manualOrderLists])); }
 
 // ── RENDER ────────────────────────────────────────────────────────
 function getActiveList() { return lists.find(l => l.id === activeListId) || lists[0]; }
@@ -923,7 +819,6 @@ function getActiveList() { return lists.find(l => l.id === activeListId) || list
 function renderAll() {
   const list = getActiveList();
   if (!list) return;
-
   document.getElementById('list-title').textContent = list.name;
   document.getElementById('list-icon').style.background = list.color;
 
@@ -962,12 +857,12 @@ function renderAll() {
     section.style.display = 'none';
   }
 
-  // Update sort button
   const sortBtn = document.getElementById('sort-btn');
   if (sortBtn) {
     if (sortMode === 'priority') { sortBtn.textContent = '↕ Priority'; sortBtn.classList.add('sort-active'); }
     else { sortBtn.textContent = '↕ Sort'; sortBtn.classList.remove('sort-active'); }
   }
+  checkBackupReminder();
 }
 
 function renderTask(t) {
@@ -979,7 +874,6 @@ function renderTask(t) {
   let meta = '';
   if (t.priority) meta += '<span class="priority-tag ' + t.priority + '">' + t.priority + '</span>';
   if (t.note) meta += '<span class="note-text">' + escHtml(t.note) + '</span>';
-
   return '<div class="task-item ' + hasColor + '" data-id="' + t.id + '">'
     + (stripColor ? '<div class="color-strip" ' + colorStyle + '></div>' : '')
     + '<div class="checkbox ' + pClass + ' ' + doneClass + '" data-check="' + t.id + '"></div>'
@@ -989,8 +883,7 @@ function renderTask(t) {
     + '</div>'
     + '<div class="drag-handle" data-drag="' + t.id + '">'
     + '<svg viewBox="0 0 16 16" fill="currentColor"><circle cx="5.5" cy="4" r="1.3"/><circle cx="10.5" cy="4" r="1.3"/><circle cx="5.5" cy="8" r="1.3"/><circle cx="10.5" cy="8" r="1.3"/><circle cx="5.5" cy="12" r="1.3"/><circle cx="10.5" cy="12" r="1.3"/></svg>'
-    + '</div>'
-    + '</div>';
+    + '</div></div>';
 }
 
 function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -1023,11 +916,8 @@ function renderDropdown() {
       + '</div>'
       + '<span class="dropdown-list-name">' + escHtml(l.name) + '</span>'
       + '<span class="list-task-count">' + (count || '') + '</span>'
-      + (canDelete
-          ? '<button class="delete-list-btn" data-delete="' + l.id + '">'
-            + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:15px;height:15px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>'
-            + '</button>'
-          : '<span style="width:28px;flex-shrink:0"></span>')
+      + (canDelete ? '<button class="delete-list-btn" data-delete="' + l.id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:15px;height:15px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>'
+        : '<span style="width:28px;flex-shrink:0"></span>')
       + '</div>';
   }).join('');
 
@@ -1057,7 +947,6 @@ function showDeleteList(lid) {
   document.getElementById('delete-list-overlay').classList.add('open');
 }
 
-// ── NEW LIST ──────────────────────────────────────────────────────
 function openNewListModal() {
   closeDropdown();
   selectedListColor = '#007aff';
@@ -1080,6 +969,42 @@ function saveNewList() {
   activeListId = newList.id;
   document.getElementById('new-list-overlay').classList.remove('open');
   renderAll();
+}
+
+// ── EXPORT / IMPORT ───────────────────────────────────────────────
+function exportData() {
+  const data = { lists, tasks, exportedAt: new Date().toISOString() };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'inbox-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.lists && data.tasks) {
+        lists = data.lists;
+        tasks = data.tasks;
+        save();
+        activeListId = lists[0].id;
+        renderAll();
+        document.getElementById('settings-overlay').classList.remove('open');
+        alert('Import successful! ' + tasks.length + ' tasks restored.');
+      } else {
+        alert('Invalid backup file.');
+      }
+    } catch(err) {
+      alert('Could not read file.');
+    }
+  };
+  reader.readAsText(file);
 }
 
 // ── TASK EVENTS ───────────────────────────────────────────────────
@@ -1238,6 +1163,7 @@ function onDragEnd() {
       tasks = [...ordered, ...complete];
       save();
       manualOrderLists.add(activeListId);
+      saveManualOrderLists();
       sortMode = 'manual';
     }
     renderAll();
@@ -1343,7 +1269,7 @@ document.getElementById('sort-btn').addEventListener('click', () => {
     sortMode = 'priority'; btn.textContent = '↕ Priority'; btn.classList.add('sort-active');
   } else {
     sortMode = 'manual'; btn.textContent = '↕ Sort'; btn.classList.remove('sort-active');
-    manualOrderLists.add(activeListId);
+    manualOrderLists.add(activeListId); saveManualOrderLists();
   }
   renderAll();
 });
@@ -1392,15 +1318,35 @@ document.getElementById('delete-list-overlay').addEventListener('click', e => {
   }
 });
 
-// Auth handler above starts everything
-
+// Settings / export / import
+document.getElementById('settings-btn').addEventListener('click', () => {
+  document.getElementById('settings-overlay').classList.add('open');
 });
+document.getElementById('close-settings').addEventListener('click', () => {
+  document.getElementById('settings-overlay').classList.remove('open');
+});
+document.getElementById('settings-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('settings-overlay')) document.getElementById('settings-overlay').classList.remove('open');
+});
+document.getElementById('export-btn').addEventListener('click', () => { exportData(); markBackup(); });
+document.getElementById('import-file').addEventListener('change', e => {
+  if (e.target.files[0]) importData(e.target.files[0]);
+});
+document.getElementById('import-btn').addEventListener('click', () => {
+  document.getElementById('import-file').click();
+});
+
+renderAll();
+
+}); // end window.onload
 </script>
 
 
 
 
-</div><!-- end app-content -->
+
+
+
 
 <script>
 // Unregister any old service workers to prevent caching issues
@@ -1411,7 +1357,7 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
-</div><!-- end app-content -->
+
 
 <script>
 // Unregister any old service workers to prevent caching issues
