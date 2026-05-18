@@ -828,16 +828,22 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 document.getElementById('google-signin-btn').addEventListener('click', () => {
-  auth.signInWithRedirect(provider).catch(err => {
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const method = isMobile ? auth.signInWithRedirect(provider) : auth.signInWithPopup(provider);
+  method.catch(err => {
     console.error('Sign in error:', err);
     document.getElementById('login-error').style.display = 'block';
   });
 });
 
-// Handle redirect result when returning from Google
-auth.getRedirectResult().catch(err => {
-  console.error('Redirect result error:', err);
-  document.getElementById('login-error').style.display = 'block';
+// Handle redirect result when returning from Google on mobile
+auth.getRedirectResult().then(result => {
+  // handled by onAuthStateChanged
+}).catch(err => {
+  if (err.code !== 'auth/no-auth-event') {
+    console.error('Redirect error:', err);
+    document.getElementById('login-error').style.display = 'block';
+  }
 });
 
 // Load from Firebase, fall back to localStorage
