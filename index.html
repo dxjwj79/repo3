@@ -828,21 +828,41 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 document.getElementById('google-signin-btn').addEventListener('click', () => {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  const method = isMobile ? auth.signInWithRedirect(provider) : auth.signInWithPopup(provider);
-  method.catch(err => {
-    console.error('Sign in error:', err);
-    document.getElementById('login-error').style.display = 'block';
-  });
+  const isStandalone = window.navigator.standalone === true;
+  if (isStandalone) {
+    // iOS home screen app — open sign-in in a new Safari tab
+    // Store a flag so when user returns we check auth state
+    localStorage.setItem('signingIn', '1');
+    window.open('https://test-5b5df.firebaseapp.com/__/auth/handler?provider=google', '_blank');
+  } else {
+    auth.signInWithPopup(provider).catch(err => {
+      console.error('Sign in error:', err);
+      if (err.code === 'auth/popup-blocked') {
+        auth.signInWithRedirect(provider);
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    });
+  }
 });
 
-// Handle redirect result when returning from Google on mobile
-auth.getRedirectResult().then(result => {
-  // handled by onAuthStateChanged
-}).catch(err => {
-  if (err.code !== 'auth/no-auth-event') {
+// When app resumes focus (user returns from Safari sign-in tab)
+window.addEventListener('focus', () => {
+  if (localStorage.getItem('signingIn')) {
+    localStorage.removeItem('signingIn');
+    auth.getRedirectResult().catch(() => {});
+    // Re-check auth state
+    const user = auth.currentUser;
+    if (user) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-content').style.display = 'block';
+    }
+  }
+});
+
+auth.getRedirectResult().catch(err => {
+  if (err.code && err.code !== 'auth/no-auth-event') {
     console.error('Redirect error:', err);
-    document.getElementById('login-error').style.display = 'block';
   }
 });
 
