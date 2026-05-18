@@ -1,5 +1,5 @@
 // ⬆️ Bump this version number every time you push an update
-const VERSION = 'v10';
+const VERSION = 'v11';
 const CACHE = 'inbox-' + VERSION;
 
 self.addEventListener('install', e => {
